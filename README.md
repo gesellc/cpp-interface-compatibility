@@ -21,18 +21,42 @@ The key to this working is that the new interface inherits publicly from the exi
 
 We follow the changes of the inventory library until it's interface can be extended without forcing the client application to recompile.
 
-## Inventory 1.0.0
+## Inventory 1.0.0 - "The Goal"
 
-## Inventory 2.0.0
+    class part
+        int id()
+
+## Inventory 2.0.0 - "Untying the knot"
+
+    class part
+        virtual int id()
+
+    part * create_part()
+ 
+Changes:
+* Hide private data in subclass `realpart` which is private to the library `inventory`
+* Make pure virtual `part` the public-facing interface of the library
+* Add factory function to create new instances
+
+Design Impact:
+* The `part` interface hides all the implementation details from clients, such as data members and private or protected member functions.
+* `realpart` can change in any way, as long as it correctly implements the `part` interface, without requiring any recompilation on the part of clients.
+
+Compatibility Impact:
+* The inventory library breaks its API
+* The client application must change code and recompile
+
+
+## Inventory 3.0.0 - "False hope"
+
+    class part
+        virtual int id()
+        virtual string name()
+
+    part * create_part()
 
 Changes:
-* 
-* 
+* a new method has been added.
 
-Reasons:
-* 
-* 
-
-Compatibility to last version:
-* __Inventory breaks API__
-* __Application must change code and recompile__
+Compatibility Impact:
+* Even though the client code doesn't use the new method, it must recompile against the new interface definition, and still needs to re-deploy at the same time as the new library is deployed.
