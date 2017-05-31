@@ -4,3 +4,5 @@ add_subdirectory(inventory_V_3_0_0)
 add_subdirectory(app_V_1_0_0-rc.1)
 add_subdirectory(app_V_1_0_0-rc.2)
 add_subdirectory(app_V_1_0_0-rc.3)
+
+add_subdirectory(properties)

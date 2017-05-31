@@ -56,7 +56,7 @@ Compatibility Impact:
     part * create_part()
 
 Changes:
-* a new method has been added.
+* A new method has been added to the public interface of our library.
 
 Compatibility Impact:
 * Even though the client code doesn't use the new method, it must recompile against the new interface definition, and still needs to re-deploy at the same time as the new library is deployed.
