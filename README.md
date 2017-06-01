@@ -1,25 +1,31 @@
 # C++ Interface Versioning
 
-https://accu.org/index.php/journals/1718
+An executable version of [this article](https://accu.org/index.php/journals/1718) and [this talk](https://www.slideshare.net/skillsmatter/cpp-ver-talk).
 
-# Components
+## Situation
 
-* Shared library
-* Multiple clients (we have only one)
+* A shared library called `inventory`
+* A client application using this library
 
-# Goal
+## Goal
 
 While the library adds new features to its interface, the clients do not have to recompile. Here, adding features to the interface means adding new methods to a type that is already used by the clients. 
 
-# Extending interfaces
+## Challenge
+
+It's still not portable however. The code for realpart_v2 is still dependent upon the implementation specific behaviour of the compiler in laying out the vtable this way. A new version of the same compiler might choose to group the functions in a different way, again resulting in undefined behaviour unless client code recompiles.
+
+## Extending interfaces
 
 The basic premise of this solution is that instead of adding methods to an interface which is part of a deployed library, the new methods are added to a new interface.
 
 The key to this working is that the new interface inherits publicly from the existing one.
 
-# Versioning Guide
+# Developing the downward compatible interfac
 
-We follow the changes of the inventory library until it's interface can be extended without forcing the client application to recompile.
+We follow the changes of the inventory library until it's interface can be safely extended without forcing the client application to recompile.
+
+The quoted text in the following section titles refer to sections of the [source article](https://accu.org/index.php/journals/1718).
 
 ## Inventory 1.0.0 - "The Goal"
 
@@ -60,3 +66,18 @@ Changes:
 
 Compatibility Impact:
 * Even though the client code doesn't use the new method, it must recompile against the new interface definition, and still needs to re-deploy at the same time as the new library is deployed.
+
+
+## Inventory 4.0.0 - "Extending Interfaces (The True Path)"
+
+    class part  
+        virtual int id()
+        virtual string name()
+
+    class part_v2 : public part  
+        virtual void id(int)  
+        virtual void name(string)  
+
+Changes:
+* Extend interface with setter methods
+* Do so in a second abstract interface class inheriting from the initial one
