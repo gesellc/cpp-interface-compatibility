@@ -112,5 +112,5 @@ script:
   - mkdir cmake-build
   - cd cmake-build
   - cmake ..
-  - cmake --build . --target application_test
+  - cmake --build . --target all
   - ./test/application_test

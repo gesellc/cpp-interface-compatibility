@@ -22,3 +22,6 @@ add_subdirectory(app_V_1_2_0-rc.1)  #  starts using setter methods
 
 
 add_subdirectory(properties)
+
+# TODO: Target property OUTPUT_NAME sets the real name of a target when it is built and can be used to help create two targets of the same name even though CMake requires unique logical target names.
+# TODO: Install commands to create and test different combinations of app and inventory.

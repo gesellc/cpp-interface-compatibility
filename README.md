@@ -1,50 +1,63 @@
-# C++ Interface Versioning
+# Interface versioning in C++
 
-An executable version of [this article](https://accu.org/index.php/journals/1718) and [this talk](https://www.slideshare.net/skillsmatter/cpp-ver-talk).
+This wants to be an executable version of [this article](https://accu.org/index.php/journals/1718) and [this talk](https://www.slideshare.net/skillsmatter/cpp-ver-talk).
+
+* [ ] Implement all steps of the article as separate versions of a dynamic library and a consuming application
+* [ ] Demonstrate described incompatibilities by combining and running different combinations of libraries and applications (maybe even compilers and compiler versions) in automated tests. Some should result in runtime errors.
 
 ## Situation
 
 * A shared library called `inventory`
-* A client application using this library
+* A client `application` using this library
 
 ## Goal
 
-While the library adds new features to its interface, the clients do not have to recompile. Here, adding features to the interface means adding new methods to a type that is already used by the clients. 
+The goal is that our library can extend its interface, while the client does not have to recompile. Here, extending the interface means adding new methods to a type that is already used by the clients.
 
 ## Challenge
 
-It's still not portable however. The code for realpart_v2 is still dependent upon the implementation specific behaviour of the compiler in laying out the vtable this way. A new version of the same compiler might choose to group the functions in a different way, again resulting in undefined behaviour unless client code recompiles.
+At various points the article comes back to the problem that the layout of vtables depents upon the implementation of the compiler that is used. Also a new version of the same compiler might choose to group the functions in a different way, again resulting in undefined behaviour unless client code recompiles.
 
-## Extending interfaces
+## Solution
 
-The basic premise of this solution is that instead of adding methods to an interface which is part of a deployed library, the new methods are added to a new interface.
+The premise of the solution the article proposes is that instead of adding methods to an interface which is part of a deployed library, the new methods are added to a new interface.
 
 The key to this working is that the new interface inherits publicly from the existing one.
 
-# Developing the downward compatible interfac
+# Steps towards a downward compatible interface
 
-We follow the changes of the inventory library until it's interface can be safely extended without forcing the client application to recompile.
+We follow the changes of the `inventory` library until it's interface can be safely extended without forcing the client `application` to recompile.
 
-The quoted text in the following section titles refer to sections of the [source article](https://accu.org/index.php/journals/1718).
+The quoted text in the following titles refer to sections of the [source article](https://accu.org/index.php/journals/1718).
 
 ## Inventory 1.0.0 - "The Goal"
+
+Inventory Interface and Implementation:
 
     class part
         int id()
 
 ## Inventory 2.0.0 - "Untying the knot"
 
-    class part
+Inventory Interface:
+
+    part * create_part( return realpart )
+ 
+    virtual class part
         virtual int id()
 
-    part * create_part()
- 
+Inventory Implementation:
+
+    class realpart : public part
+        int id()
+
+
 Changes:
 * Hide private data in subclass `realpart` which is private to the library `inventory`
 * Make pure virtual `part` the public-facing interface of the library
 * Add factory function to create new instances
 
-Design Impact:
+Design Evolution:
 * The `part` interface hides all the implementation details from clients, such as data members and private or protected member functions.
 * `realpart` can change in any way, as long as it correctly implements the `part` interface, without requiring any recompilation on the part of clients.
 
@@ -55,29 +68,65 @@ Compatibility Impact:
 
 ## Inventory 3.0.0 - "False hope"
 
-    class part
+Inventory Interface:
+
+    part * create_part( return realpart )
+
+    virtual class part
         virtual int id()
         virtual string name()
 
-    part * create_part()
+Inventory Implementation:
+
+    class realpart : pulic part
+        int id()
+        string name()
+
 
 Changes:
 * A new method has been added to the public interface of our library.
+
+Design Evolution:
+* Not really, just another method.
 
 Compatibility Impact:
 * Even though the client code doesn't use the new method, it must recompile against the new interface definition, and still needs to re-deploy at the same time as the new library is deployed.
 
 
-## Inventory 4.0.0 - "Extending Interfaces (The True Path)"
+## Inventory 4.0.0 - "The true path to extending interfaces and a wrong turn"
 
-    class part  
+Inventory Interface:
+
+    part * create_part( return realpart)
+    
+    virtual class part  
         virtual int id()
         virtual string name()
 
-    class part_v2 : public part  
+    virtual class part_v2 : public part  
         virtual void id(int)  
         virtual void name(string)  
 
+Inventory Implementation:
+
+    class realpart : public part_v2
+        int id()
+        string name()
+        id(int)
+        name(string)
+
 Changes:
-* Extend interface with setter methods
-* Do so in a second abstract interface class inheriting from the initial one
+* Add setter methods to interface
+* Do so by adding a second abstract interface class inheriting from the existing one.
+* A single class implements the second abstract interface class
+
+Design Evolution:
+* The interface is formed by an inheritance structure of pure virtual classes.
+
+Compatibility Impact:
+
+# "Virtually done"
+
+# "Ambiguity banishment"
+
+# "Finishing polish"
