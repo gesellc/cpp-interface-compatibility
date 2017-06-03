@@ -1,22 +1,22 @@
 # Interface versioning in C++
 
-This wants to be an executable version of [this article](https://accu.org/index.php/journals/1718) and [this talk](https://www.slideshare.net/skillsmatter/cpp-ver-talk).
+This repo aims to provide an executable version of the article [Interface Versioning in C++](https://accu.org/index.php/journals/1718) by Steve Love, also covered in [this talk](https://skillsmatter.com/skillscasts/1599-interface-versioning-in-c-plus-plus) using [these slides](https://www.slideshare.net/skillsmatter/cpp-ver-talk).
 
 * [ ] Implement all steps of the article as separate versions of a dynamic library and a consuming application
+* [ ] Demonstrate described incompatibilities on `properties` classes
 * [ ] Demonstrate described incompatibilities by combining and running different combinations of libraries and applications (maybe even compilers and compiler versions) in automated tests. Some should result in runtime errors.
 
 ## Situation
 
-* A shared library called `inventory`
-* A client `application` using this library
+A shared library called `inventory` and a client `application` using this library.
 
 ## Goal
 
-The goal is that our library can extend its interface, while the client does not have to recompile. Here, extending the interface means adding new methods to a type that is already used by the clients.
+The goal is that our library can extend its interface, while the client does not have to recompile. Here, extending the interface means adding new methods to a type that is already used by the client.
 
 ## Challenge
 
-At various points the article comes back to the problem that the layout of vtables depents upon the implementation of the compiler that is used. Also a new version of the same compiler might choose to group the functions in a different way, again resulting in undefined behaviour unless client code recompiles.
+At various points the article comes back to the problem that the layout of vtables depends upon the implementation of the compiler that is used. Also a new version of the same compiler might choose to group the functions in a different way, again resulting in undefined behaviour unless client code recompiles.
 
 ## Solution
 
@@ -26,9 +26,9 @@ The key to this working is that the new interface inherits publicly from the exi
 
 # Steps towards a downward compatible interface
 
-We follow the changes of the `inventory` library until it's interface can be safely extended without forcing the client `application` to recompile.
+We follow the changes of the `inventory` library until its interface can be safely extended without forcing the client `application` to recompile.
 
-The quoted text in the following titles refer to sections of the [source article](https://accu.org/index.php/journals/1718).
+The quoted text in the following titles refers to sections of the [source article](https://accu.org/index.php/journals/1718).
 
 ## Inventory 1.0.0 - "The Goal"
 
@@ -93,7 +93,7 @@ Compatibility Impact:
 * Even though the client code doesn't use the new method, it must recompile against the new interface definition, and still needs to re-deploy at the same time as the new library is deployed.
 
 
-## Inventory 4.0.0 - "The true path to extending interfaces and a wrong turn"
+## Inventory 4.0.0 - "Extending interfaces and a wrong turn"
 
 Inventory Interface:
 
@@ -126,8 +126,8 @@ Design Evolution:
 Compatibility Impact:
 
 
-# "Virtually done"
+## "Virtually done"
 
-# "Ambiguity banishment"
+## "Ambiguity banishment"
 
-# "Finishing polish"
+## "Finishing polish"
